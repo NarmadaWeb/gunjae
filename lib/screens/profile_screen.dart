@@ -59,7 +59,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     // If loading or redirecting
     if (_user == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        body: const Center(child: CircularProgressIndicator()),
+        bottomNavigationBar: BottomNavBar(
+            currentIndex: 3,
+            onTap: (idx) {
+              if (idx == 0) Navigator.pushReplacementNamed(context, '/home');
+              if (idx == 1) Navigator.pushReplacementNamed(context, '/map');
+              if (idx == 2) Navigator.pushReplacementNamed(context, '/history');
+            }),
+      );
     }
 
     return Scaffold(
