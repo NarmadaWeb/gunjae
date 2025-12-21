@@ -1,14 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_material_symbols/flutter_material_symbols.dart';
+import 'package:provider/provider.dart';
+import '../data/repository.dart';
 import '../models/spot.dart';
+import '../models/review.dart';
 
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   const DetailScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final Spot spot = ModalRoute.of(context)!.settings.arguments as Spot;
+  State<DetailScreen> createState() => _DetailScreenState();
+}
 
+class _DetailScreenState extends State<DetailScreen> {
+  late Spot spot;
+  List<Review> _reviews = [];
+  bool _isLoadingReviews = true;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    spot = ModalRoute.of(context)!.settings.arguments as Spot;
+    _loadReviews();
+  }
+
+  void _loadReviews() async {
+    final repo = context.read<Repository>();
+    try {
+      final reviews = await repo.store.getReviews(spot.id);
+      if (mounted) {
+        setState(() {
+          _reviews = reviews;
+          _isLoadingReviews = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoadingReviews = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
@@ -91,8 +123,8 @@ class DetailScreen extends StatelessWidget {
                         Text(spot.rating.toString(),
                             style:
                                 const TextStyle(fontWeight: FontWeight.bold)),
-                        const Text(" (120 Reviews)",
-                            style: TextStyle(color: Colors.grey)),
+                        Text(" (${_reviews.length} Ulasan)",
+                            style: const TextStyle(color: Colors.grey)),
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -114,6 +146,18 @@ class DetailScreen extends StatelessWidget {
                           .map((f) => _buildFacility(context, f))
                           .toList(),
                     ),
+                    const SizedBox(height: 24),
+                    const Text("Ulasan Pengunjung",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    if (_isLoadingReviews)
+                      const Center(child: CircularProgressIndicator())
+                    else if (_reviews.isEmpty)
+                      const Text("Belum ada ulasan.",
+                          style: TextStyle(color: Colors.grey))
+                    else
+                      ..._reviews.map((r) => _buildReviewItem(r)),
                   ],
                 ),
               ),
@@ -215,6 +259,51 @@ class DetailScreen extends StatelessWidget {
         Text(name,
             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
       ],
+    );
+  }
+
+  Widget _buildReviewItem(Review review) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.grey[200],
+                    child: const Icon(Icons.person, size: 16, color: Colors.grey),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(review.userName ?? "Pengunjung",
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                ],
+              ),
+              Row(
+                children: [
+                  const Icon(Icons.star, size: 14, color: Colors.amber),
+                  Text(review.rating.toString(),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 12)),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(review.comment,
+              style: const TextStyle(color: Colors.grey, fontSize: 12)),
+        ],
+      ),
     );
   }
 }
