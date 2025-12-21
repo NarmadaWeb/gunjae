@@ -1,6 +1,8 @@
+import 'dart:io';
 import '../models/user.dart';
 import '../models/spot.dart';
 import '../models/booking.dart';
+import '../models/review.dart';
 
 abstract class DataStore {
   Future<void> init();
@@ -8,7 +10,9 @@ abstract class DataStore {
   // User CRUD
   Future<User> createUser(User user);
   Future<User?> getUser(String email, String password);
-  Future<User?> getUserById(int id);
+  Future<User?> getUserById(String id);
+  Future<void> updateUser(User user);
+  Future<String> uploadAvatar(File file, String userId);
 
   // Spot CRUD (Read mostly)
   Future<List<Spot>> getSpots();
@@ -17,7 +21,11 @@ abstract class DataStore {
 
   // Booking CRUD
   Future<Booking> createBooking(Booking booking);
-  Future<List<Booking>> getBookings(int userId);
+  Future<List<Booking>> getBookings(String userId);
   Future<void> updateBooking(Booking booking);
   Future<void> deleteBooking(int id);
+
+  // Review CRUD
+  Future<void> createReview(Review review);
+  Future<List<Review>> getReviews(int spotId);
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../data/repository.dart';
 import '../models/booking.dart';
+import '../services/payment_service.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -11,41 +13,96 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  String _selectedMethod = 'E-Wallet';
+  String _selectedMethod = 'QRIS';
+  bool _isProcessing = false;
+  Map<String, dynamic>? _paymentData; // To store QR data
+  bool _showSuccess = false;
 
-  void _processPayment() async {
+  final PaymentService _paymentService = PaymentService();
+
+  void _initiatePayment() async {
+    setState(() => _isProcessing = true);
+
+    // 1. Create Booking first (Pending)
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     Booking booking = args['booking'];
     final repo = context.read<Repository>();
 
-    // Ensure booking has current user ID if not already
     if (repo.currentUserId != null) {
       booking = Booking(
-        id: booking.id,
         userId: repo.currentUserId!,
         spotId: booking.spotId,
         checkIn: booking.checkIn,
         checkOut: booking.checkOut,
         guests: booking.guests,
         totalPrice: booking.totalPrice,
-        status: booking.status,
+        status: 'unpaid', // Initial status
         createdAt: booking.createdAt,
+        paymentMethod: _selectedMethod,
       );
     }
 
     try {
-      await repo.store.createBooking(booking);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Pembayaran Berhasil!')));
-        Navigator.pushNamedAndRemoveUntil(
-            context, '/history', (route) => route.isFirst);
-      }
+      // Create booking in DB first
+      final createdBooking = await repo.store.createBooking(booking);
+      final bookingId = createdBooking.id;
+
+      // 2. Call Payment Service (Mock Xendit)
+      // Use booking ID as external ID
+      final paymentResponse = await _paymentService.createQRCode(
+        externalId: 'booking_$bookingId',
+        amount: booking.totalPrice,
+      );
+
+      // Update Booking with payment URL/data if needed
+      // (Skipping DB update for simplicity, assuming we just show QR here)
+
+      setState(() {
+        _paymentData = paymentResponse;
+        _isProcessing = false;
+      });
+
+      // 3. Start Polling for status
+      _pollPaymentStatus(paymentResponse['id'], createdBooking);
     } catch (e) {
+      setState(() => _isProcessing = false);
       if (mounted)
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+  void _pollPaymentStatus(String qrId, Booking booking) async {
+    // Simulate polling
+    await Future.delayed(const Duration(seconds: 4));
+
+    // Assume success
+    if (mounted) {
+      setState(() {
+        _showSuccess = true;
+      });
+      // Update DB to active/paid
+      final repo = context.read<Repository>();
+      final updatedBooking = Booking(
+        id: booking.id,
+        userId: booking.userId,
+        spotId: booking.spotId,
+        checkIn: booking.checkIn,
+        checkOut: booking.checkOut,
+        guests: booking.guests,
+        totalPrice: booking.totalPrice,
+        status: 'active', // Paid
+        createdAt: booking.createdAt,
+        paymentMethod: _selectedMethod,
+      );
+      await repo.store.updateBooking(updatedBooking);
+
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/history', (route) => route.isFirst);
+      }
     }
   }
 
@@ -54,6 +111,70 @@ class _PaymentScreenState extends State<PaymentScreen> {
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final Booking booking = args['booking'];
+
+    if (_showSuccess) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.check_circle, size: 80, color: Colors.green),
+              const SizedBox(height: 24),
+              const Text("Pembayaran Berhasil!",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const Text("Terima kasih telah memesan.",
+                  style: TextStyle(color: Colors.grey)),
+              const SizedBox(height: 32),
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              const Text("Mengalihkan...", style: TextStyle(color: Colors.grey)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_paymentData != null) {
+      // Show QR Screen
+      return Scaffold(
+        appBar: AppBar(title: const Text("Scan QRIS")),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Scan QR Code di bawah",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const Text("Mendukung Gopay, OVO, Dana, ShopeePay",
+                  style: TextStyle(color: Colors.grey)),
+              const SizedBox(height: 32),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.1), blurRadius: 10)
+                  ],
+                ),
+                child: QrImageView(
+                  data: _paymentData!['qr_string'],
+                  version: QrVersions.auto,
+                  size: 250.0,
+                ),
+              ),
+              const SizedBox(height: 32),
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              const Text("Menunggu pembayaran...",
+                  style: TextStyle(color: Colors.grey)),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -91,10 +212,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             fontWeight: FontWeight.bold, fontSize: 18)),
                   ),
                   const SizedBox(height: 16),
-                  _buildMethod("E-Wallet", "Gopay, OVO, Dana",
-                      Icons.account_balance_wallet),
+                  _buildMethod("QRIS", "Scan QR Code (Recommended)",
+                      Icons.qr_code_scanner),
                   const SizedBox(height: 12),
-                  _buildMethod("Transfer Bank", "BCA, Mandiri, BNI",
+                  _buildMethod("Transfer Bank", "BCA, Mandiri, BNI (Manual)",
                       Icons.account_balance),
                 ],
               ),
@@ -117,10 +238,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: _processPayment,
+                    onPressed: _isProcessing ? null : _initiatePayment,
                     style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16)),
-                    child: const Text("Bayar Sekarang"),
+                    child: _isProcessing
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child:
+                                CircularProgressIndicator(color: Colors.white))
+                        : const Text("Bayar Sekarang"),
                   ),
                 ),
               ],

@@ -1,26 +1,24 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data_store.dart';
-import 'store_stub.dart'
-    if (dart.library.io) 'store_mobile.dart'
-    if (dart.library.html) 'store_web.dart';
+import 'supabase_store.dart';
 
 class Repository {
   late DataStore _store;
-  int? currentUserId;
+  String? currentUserId;
   static const String _sessionKey = 'session_user_id';
 
   Future<void> init() async {
-    _store = getStore();
+    _store = SupabaseStore();
     await _store.init();
     await _loadSession();
   }
 
   DataStore get store => _store;
 
-  Future<void> login(int userId) async {
+  Future<void> login(String userId) async {
     currentUserId = userId;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_sessionKey, userId);
+    await prefs.setString(_sessionKey, userId);
   }
 
   Future<void> logout() async {
@@ -32,7 +30,7 @@ class Repository {
   Future<void> _loadSession() async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey(_sessionKey)) {
-      currentUserId = prefs.getInt(_sessionKey);
+      currentUserId = prefs.getString(_sessionKey);
     }
   }
 }

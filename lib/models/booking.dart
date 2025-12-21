@@ -6,8 +6,10 @@ class Booking {
   final DateTime checkOut;
   final int guests;
   final double totalPrice;
-  final String status; // 'active', 'completed', 'cancelled'
+  final String status; // 'active', 'completed', 'cancelled', 'unpaid'
   final String createdAt;
+  final String? paymentMethod;
+  final String? paymentUrl; // For QR string or redirect URL
 
   Booking({
     this.id,
@@ -19,6 +21,8 @@ class Booking {
     required this.totalPrice,
     required this.status,
     required this.createdAt,
+    this.paymentMethod,
+    this.paymentUrl,
   });
 
   Map<String, dynamic> toMap() {
@@ -32,6 +36,8 @@ class Booking {
       'totalPrice': totalPrice,
       'status': status,
       'createdAt': createdAt,
+      'paymentMethod': paymentMethod,
+      'paymentUrl': paymentUrl,
     };
   }
 
@@ -48,6 +54,8 @@ class Booking {
           : (map['totalPrice'] as num).toDouble(),
       status: map['status'],
       createdAt: map['createdAt'],
+      paymentMethod: map['paymentMethod'],
+      paymentUrl: map['paymentUrl'],
     );
   }
 }
