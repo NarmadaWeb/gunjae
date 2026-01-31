@@ -142,6 +142,13 @@ class SupabaseStore implements DataStore {
     }
   }
 
+  @override
+  Future<void> createSpot(Spot spot) async {
+    final map = spot.toMap();
+    map.remove('id'); // Let DB assign ID
+    await _client.from('spots').insert(map);
+  }
+
   // Booking CRUD
   @override
   Future<Booking> createBooking(Booking booking) async {

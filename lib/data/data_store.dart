@@ -18,6 +18,7 @@ abstract class DataStore {
   Future<List<Spot>> getSpots();
   Future<Spot?> getSpot(int id);
   Future<void> seedSpots(List<Spot> spots); // Helper to init data
+  Future<void> createSpot(Spot spot);
 
   // Booking CRUD
   Future<Booking> createBooking(Booking booking);

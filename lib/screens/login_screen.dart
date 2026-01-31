@@ -29,8 +29,13 @@ class _LoginScreenState extends State<LoginScreen> {
           .getUser(_emailController.text, _passwordController.text);
       if (user != null) {
         repo.login(user.id!); // Set session
-        if (mounted)
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+        if (mounted) {
+          if (_emailController.text == 'admin@gunjae.com') {
+             Navigator.pushNamedAndRemoveUntil(context, '/admin_home', (route) => false);
+          } else {
+             Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+          }
+        }
       } else {
         if (mounted)
           ScaffoldMessenger.of(context)

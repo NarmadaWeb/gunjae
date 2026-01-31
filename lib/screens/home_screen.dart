@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import '../data/repository.dart';
 import '../models/spot.dart';
@@ -206,10 +207,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(16),
-                                gradient: const LinearGradient(
+                                gradient: LinearGradient(
                                   begin: Alignment.bottomCenter,
                                   end: Alignment.topCenter,
-                                  colors: [Colors.black87, Colors.transparent],
+                                  colors: [Colors.black.withOpacity(0.8), Colors.transparent],
+                                  stops: const [0.0, 0.6],
                                 ),
                               ),
                             ),
@@ -222,25 +224,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 2),
+                                        horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
                                       color: Theme.of(context).primaryColor,
-                                      borderRadius: BorderRadius.circular(4),
+                                      borderRadius: BorderRadius.circular(6),
                                     ),
-                                    child: const Text("POPULER",
-                                        style: TextStyle(
+                                    child: Text("POPULER",
+                                        style: GoogleFonts.plusJakartaSans(
                                             fontSize: 10,
-                                            fontWeight: FontWeight.bold)),
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black)),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 8),
                                   Text(spot.name,
-                                      style: const TextStyle(
+                                      style: GoogleFonts.plusJakartaSans(
                                           color: Colors.white,
-                                          fontSize: 20,
+                                          fontSize: 22,
                                           fontWeight: FontWeight.bold)),
-                                  Text(spot.location,
-                                      style: const TextStyle(
-                                          color: Colors.white70, fontSize: 14)),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.location_on, color: Colors.white70, size: 14),
+                                      const SizedBox(width: 4),
+                                      Text(spot.location,
+                                          style: GoogleFonts.plusJakartaSans(
+                                              color: Colors.white70, fontSize: 14)),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
@@ -276,26 +285,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   return GestureDetector(
                     onTap: () => Navigator.pushNamed(context, '/detail',
                         arguments: spot),
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 4)
-                        ],
-                      ),
+                    child: Card(
+                      elevation: 4,
+                      shadowColor: Colors.black12,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ClipRRect(
                             borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(16)),
+                                top: Radius.circular(20)),
                             child: CachedNetworkImage(
                               imageUrl: spot.imageUrl,
-                              height: 200,
+                              height: 220,
                               width: double.infinity,
                               fit: BoxFit.cover,
                               placeholder: (context, url) =>
@@ -305,47 +308,55 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(20),
                             child: Column(
                               children: [
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(spot.name,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18)),
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.location_on,
-                                                size: 14, color: Colors.grey),
-                                            Text(spot.location,
-                                                style: const TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.grey)),
-                                          ],
-                                        ),
-                                      ],
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(spot.name,
+                                              style: GoogleFonts.plusJakartaSans(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20)),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              const Icon(Icons.location_on,
+                                                  size: 16, color: Colors.grey),
+                                              const SizedBox(width: 4),
+                                              Expanded(
+                                                child: Text(spot.location,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: GoogleFonts.notoSans(
+                                                        fontSize: 14,
+                                                        color: Colors.grey)),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                     Container(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
+                                          horizontal: 10, vertical: 6),
                                       decoration: BoxDecoration(
                                         color: Colors.amber[50],
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Row(
                                         children: [
                                           const Icon(Icons.star,
-                                              size: 14, color: Colors.amber),
+                                              size: 16, color: Colors.amber),
                                           const SizedBox(width: 4),
                                           Text(spot.rating.toString(),
-                                              style: const TextStyle(
+                                              style: GoogleFonts.plusJakartaSans(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.brown)),
                                         ],
@@ -353,9 +364,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 12),
+                                const SizedBox(height: 16),
                                 const Divider(height: 1),
-                                const SizedBox(height: 12),
+                                const SizedBox(height: 16),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -364,22 +375,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        const Text("Mulai dari",
-                                            style: TextStyle(
-                                                fontSize: 10,
+                                        Text("Mulai dari",
+                                            style: GoogleFonts.notoSans(
+                                                fontSize: 12,
                                                 color: Colors.grey)),
                                         RichText(
                                           text: TextSpan(
                                             text: "Rp ${spot.price.toInt()}",
-                                            style: TextStyle(
+                                            style: GoogleFonts.plusJakartaSans(
                                                 color: Theme.of(context)
                                                     .primaryColor,
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 18),
-                                            children: const [
+                                                fontSize: 20),
+                                            children: [
                                               TextSpan(
                                                   text: "/malam",
-                                                  style: TextStyle(
+                                                  style: GoogleFonts.notoSans(
                                                       color: Colors.black54,
                                                       fontSize: 12,
                                                       fontWeight:
@@ -397,9 +408,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         backgroundColor: Colors.black,
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
-                                                BorderRadius.circular(8)),
+                                                BorderRadius.circular(12)),
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 16),
+                                            horizontal: 24, vertical: 12),
+                                        elevation: 0,
                                       ),
                                       child: const Text("Pilih",
                                           style: TextStyle(
