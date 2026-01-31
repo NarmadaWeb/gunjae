@@ -13,6 +13,8 @@ import 'screens/history_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/edit_booking_screen.dart';
 import 'screens/map_screen.dart';
+import 'screens/admin/admin_home_screen.dart';
+import 'screens/admin/add_camp_screen.dart';
 import 'utils/theme.dart';
 
 void main() async {
@@ -53,6 +55,8 @@ class GunjaeApp extends StatelessWidget {
         '/profile': (context) => const ProfileScreen(),
         '/edit_booking': (context) => const EditBookingScreen(),
         '/map': (context) => const MapScreen(),
+        '/admin_home': (context) => const AdminHomeScreen(),
+        '/admin/add_camp': (context) => const AddCampScreen(),
       },
     );
   }
