@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_material_symbols/flutter_material_symbols.dart';
 import 'package:provider/provider.dart';
 import '../data/repository.dart';
 import '../models/spot.dart';
@@ -230,7 +229,7 @@ class _DetailScreenState extends State<DetailScreen> {
     IconData icon;
     switch (name) {
       case "Tenda":
-        icon = MaterialSymbols.camping;
+        icon = Icons.holiday_village;
         break;
       case "WiFi":
         icon = Icons.wifi;
