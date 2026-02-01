@@ -133,6 +133,19 @@ class JsonStore implements DataStore {
   }
 
   @override
+  Future<void> updateSpot(Spot spot) async {
+    final index = _spots.indexWhere((s) => s.id == spot.id);
+    if (index != -1) {
+      _spots[index] = spot;
+    }
+  }
+
+  @override
+  Future<void> deleteSpot(int id) async {
+    _spots.removeWhere((s) => s.id == id);
+  }
+
+  @override
   Future<Booking> createBooking(Booking booking) async {
     final newBooking = Booking(
       id: (_bookings.isNotEmpty ? _bookings.map((b) => b.id ?? 0).reduce((a, b) => a > b ? a : b) : 0) + 1,
@@ -154,6 +167,11 @@ class JsonStore implements DataStore {
   @override
   Future<List<Booking>> getBookings(String userId) async {
     return _bookings.where((b) => b.userId == userId).toList();
+  }
+
+  @override
+  Future<List<Booking>> getAllBookings() async {
+    return _bookings;
   }
 
   @override

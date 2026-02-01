@@ -4,7 +4,8 @@ import '../../data/repository.dart';
 import '../../models/spot.dart';
 
 class AddCampScreen extends StatefulWidget {
-  const AddCampScreen({super.key});
+  final Spot? spot;
+  const AddCampScreen({super.key, this.spot});
 
   @override
   State<AddCampScreen> createState() => _AddCampScreenState();
@@ -20,24 +21,48 @@ class _AddCampScreenState extends State<AddCampScreen> {
   final _facilitiesController = TextEditingController();
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.spot != null) {
+      _nameController.text = widget.spot!.name;
+      _locationController.text = widget.spot!.location;
+      _priceController.text = widget.spot!.price.toString();
+      _imageController.text = widget.spot!.imageUrl;
+      _descController.text = widget.spot!.description;
+      if (widget.spot!.facilities is List) {
+        _facilitiesController.text = (widget.spot!.facilities as List).join(', ');
+      } else {
+        _facilitiesController.text = widget.spot!.facilities.toString();
+      }
+    }
+  }
+
   void _save() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       try {
         final spot = Spot(
-          id: 0, // Ignored by createSpot
+          id: widget.spot?.id ?? 0,
           name: _nameController.text,
           location: _locationController.text,
           price: double.parse(_priceController.text),
-          rating: 5.0, // Default rating for new spot
+          rating: widget.spot?.rating ?? 5.0,
           imageUrl: _imageController.text,
           description: _descController.text,
           facilities: _facilitiesController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList(),
         );
 
-        await context.read<Repository>().store.createSpot(spot);
+        final store = context.read<Repository>().store;
+        if (widget.spot == null) {
+          await store.createSpot(spot);
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Berhasil menambahkan camp!")));
+        } else {
+          await store.updateSpot(spot);
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Berhasil memperbarui camp!")));
+        }
+
         if (mounted) {
-           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Berhasil menambahkan camp!")));
            Navigator.pop(context);
         }
       } catch (e) {
@@ -54,7 +79,7 @@ class _AddCampScreenState extends State<AddCampScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Tambah Tempat Camp"),
+        title: Text(widget.spot == null ? "Tambah Tempat Camp" : "Edit Camp"),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -99,7 +124,7 @@ class _AddCampScreenState extends State<AddCampScreen> {
                   ),
                   child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("Simpan", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                    : Text(widget.spot == null ? "Simpan" : "Update", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                 ),
               ),
             ],

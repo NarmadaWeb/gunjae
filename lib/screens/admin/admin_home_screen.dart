@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/repository.dart';
 import '../../models/spot.dart';
+import 'add_camp_screen.dart';
+import 'admin_booking_screen.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -28,6 +30,33 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         _spots = spots;
         _isLoading = false;
       });
+    }
+  }
+
+  void _deleteSpot(Spot spot) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text("Hapus ${spot.name}?"),
+        content: const Text("Tindakan ini tidak dapat dibatalkan."),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text("Batal")),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text("Hapus", style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+
+    if (confirm == true && mounted) {
+      await context.read<Repository>().store.deleteSpot(spot.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Spot dihapus")));
+        _loadSpots();
+      }
     }
   }
 
@@ -61,29 +90,85 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   const Text("Selamat Datang, Admin",
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
-                  Card(
-                    elevation: 0,
-                    color: const Color(0xFF13ec5b).withOpacity(0.1),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.landscape, size: 48, color: Color(0xFF13ec5b)),
-                          const SizedBox(width: 16),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text("Total Spots",
-                                  style: TextStyle(color: Colors.black54, fontSize: 14)),
-                              Text("${_spots.length}",
-                                  style: const TextStyle(
-                                      fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black87)),
-                            ],
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Card(
+                          elevation: 0,
+                          color: const Color(0xFF13ec5b).withOpacity(0.1),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.landscape,
+                                    size: 32, color: Color(0xFF13ec5b)),
+                                const SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text("Total Spots",
+                                        style: TextStyle(
+                                            color: Colors.black54,
+                                            fontSize: 12)),
+                                    Text("${_spots.length}",
+                                        style: const TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black87)),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Card(
+                          elevation: 0,
+                          color: Colors.orange.withOpacity(0.1),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16)),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(16),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) =>
+                                          const AdminBookingScreen()));
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.list_alt,
+                                      size: 32, color: Colors.orange),
+                                  const SizedBox(width: 12),
+                                  const Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text("Pemesanan",
+                                          style: TextStyle(
+                                              color: Colors.black54,
+                                              fontSize: 12)),
+                                      Text("Lihat",
+                                          style: TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black87)),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 32),
                   const Text("Daftar Camp",
@@ -111,11 +196,35 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                errorBuilder: (ctx, err, stack) => Container(color: Colors.grey[300], width: 60, height: 60, child: const Icon(Icons.broken_image)),
                             ),
                           ),
-                          title: Text(spot.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          title: Text(spot.name,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
                           subtitle: Text(spot.location),
-                          trailing: const Icon(Icons.chevron_right),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.edit, color: Colors.blue),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            AddCampScreen(spot: spot)),
+                                  ).then((_) => _loadSpots());
+                                },
+                              ),
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () => _deleteSpot(spot),
+                              ),
+                            ],
+                          ),
                           onTap: () {
-                             Navigator.pushNamed(context, '/detail', arguments: spot);
+                            Navigator.pushNamed(context, '/detail',
+                                arguments: spot);
                           },
                         ),
                       );
