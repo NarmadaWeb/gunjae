@@ -15,29 +15,43 @@ class JsonStore implements DataStore {
   @override
   Future<void> init() async {
     try {
-      final usersJson = await rootBundle.loadString('assets/data/users.json');
-      _users = (jsonDecode(usersJson) as List).map((e) => User.fromMap(e)).toList();
+      final usersJson = await rootBundle
+          .loadString('assets/data/users.json')
+          .timeout(const Duration(seconds: 5));
+      _users =
+          (jsonDecode(usersJson) as List).map((e) => User.fromMap(e)).toList();
     } catch (e) {
       print('Error loading users: $e');
     }
 
     try {
-      final spotsJson = await rootBundle.loadString('assets/data/spots.json');
-      _spots = (jsonDecode(spotsJson) as List).map((e) => Spot.fromMap(e)).toList();
+      final spotsJson = await rootBundle
+          .loadString('assets/data/spots.json')
+          .timeout(const Duration(seconds: 5));
+      _spots =
+          (jsonDecode(spotsJson) as List).map((e) => Spot.fromMap(e)).toList();
     } catch (e) {
       print('Error loading spots: $e');
     }
 
     try {
-      final bookingsJson = await rootBundle.loadString('assets/data/bookings.json');
-      _bookings = (jsonDecode(bookingsJson) as List).map((e) => Booking.fromMap(e)).toList();
+      final bookingsJson = await rootBundle
+          .loadString('assets/data/bookings.json')
+          .timeout(const Duration(seconds: 5));
+      _bookings = (jsonDecode(bookingsJson) as List)
+          .map((e) => Booking.fromMap(e))
+          .toList();
     } catch (e) {
       print('Error loading bookings: $e');
     }
 
     try {
-      final reviewsJson = await rootBundle.loadString('assets/data/reviews.json');
-      _reviews = (jsonDecode(reviewsJson) as List).map((e) => Review.fromMap(e)).toList();
+      final reviewsJson = await rootBundle
+          .loadString('assets/data/reviews.json')
+          .timeout(const Duration(seconds: 5));
+      _reviews = (jsonDecode(reviewsJson) as List)
+          .map((e) => Review.fromMap(e))
+          .toList();
     } catch (e) {
       print('Error loading reviews: $e');
     }
