@@ -17,18 +17,69 @@ import 'screens/admin/admin_home_screen.dart';
 import 'screens/admin/add_camp_screen.dart';
 import 'utils/theme.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  runApp(const AppStarter());
+}
 
-  final repository = Repository();
-  await repository.init();
+class AppStarter extends StatefulWidget {
+  const AppStarter({super.key});
 
-  runApp(
-    Provider<Repository>.value(
-      value: repository,
-      child: const GunjaeApp(),
-    ),
-  );
+  @override
+  State<AppStarter> createState() => _AppStarterState();
+}
+
+class _AppStarterState extends State<AppStarter> {
+  late Future<Repository> _initFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _initFuture = _initRepository();
+  }
+
+  Future<Repository> _initRepository() async {
+    final repository = Repository();
+    await repository.init();
+    return repository;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: FutureBuilder<Repository>(
+        future: _initFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData) {
+            return Provider<Repository>.value(
+              value: snapshot.data!,
+              child: const GunjaeApp(),
+            );
+          } else if (snapshot.hasError) {
+            return Scaffold(
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Error initializing app:\n${snapshot.error}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              ),
+            );
+          }
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
 
 class GunjaeApp extends StatelessWidget {
