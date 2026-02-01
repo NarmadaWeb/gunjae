@@ -38,7 +38,8 @@ class Review {
           : (map['rating'] as num).toDouble(),
       comment: map['comment'] ?? '',
       createdAt: map['createdAt'],
-      userName: map['profiles'] != null ? map['profiles']['name'] : null,
+      userName: map['userName'] ??
+          (map['profiles'] != null ? map['profiles']['name'] : null),
     );
   }
 }

@@ -45,7 +45,9 @@ class Spot {
           : (map['rating'] as num).toDouble(),
       imageUrl: map['imageUrl'],
       description: map['description'],
-      facilities: (map['facilities'] as String).split(','),
+      facilities: map['facilities'] is String
+          ? (map['facilities'] as String).split(',')
+          : List<String>.from(map['facilities']),
     );
   }
 }
