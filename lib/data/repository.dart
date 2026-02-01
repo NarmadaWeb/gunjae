@@ -30,7 +30,21 @@ class Repository {
   Future<void> _loadSession() async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey(_sessionKey)) {
-      currentUserId = prefs.getString(_sessionKey);
+      try {
+        currentUserId = prefs.getString(_sessionKey);
+      } catch (e) {
+        // Handle case where user ID was stored as int (legacy)
+        try {
+          final intId = prefs.getInt(_sessionKey);
+          if (intId != null) {
+            currentUserId = intId.toString();
+            // Migrate to string
+            await prefs.setString(_sessionKey, currentUserId!);
+          }
+        } catch (_) {
+          await prefs.remove(_sessionKey);
+        }
+      }
     }
   }
 }

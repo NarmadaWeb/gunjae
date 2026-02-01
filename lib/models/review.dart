@@ -32,7 +32,7 @@ class Review {
     return Review(
       id: map['id'],
       spotId: map['spotId'],
-      userId: map['userId'],
+      userId: map['userId'].toString(),
       rating: map['rating'] is String
           ? double.parse(map['rating'])
           : (map['rating'] as num).toDouble(),

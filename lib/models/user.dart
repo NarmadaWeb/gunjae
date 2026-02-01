@@ -25,7 +25,7 @@ class User {
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
-      id: map['id'],
+      id: map['id']?.toString(),
       name: map['name'],
       email: map['email'],
       password: map['password'],
