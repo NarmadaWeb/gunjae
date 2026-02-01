@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_material_symbols/flutter_material_symbols.dart';
 import '../widgets/custom_button.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -44,7 +43,7 @@ class WelcomeScreen extends StatelessWidget {
                     children: [
                       const Row(
                         children: [
-                          Icon(MaterialSymbols.camping,
+                          Icon(Icons.holiday_village,
                               color: Color(0xFF13ec5b), size: 40),
                           SizedBox(width: 8),
                           Text(

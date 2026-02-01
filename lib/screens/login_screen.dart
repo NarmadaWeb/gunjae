@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_material_symbols/flutter_material_symbols.dart';
 import '../data/repository.dart';
 import '../widgets/custom_button.dart';
 
@@ -90,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 32),
                   Row(
                     children: [
-                      Icon(MaterialSymbols.camping,
+                      Icon(Icons.holiday_village,
                           color: Theme.of(context).primaryColor, size: 32),
                       const SizedBox(width: 8),
                       const Text("Gunjae",
