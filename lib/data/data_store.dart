@@ -17,10 +17,13 @@ abstract class DataStore {
   Future<Spot?> getSpot(int id);
   Future<void> seedSpots(List<Spot> spots); // Helper to init data
   Future<void> createSpot(Spot spot);
+  Future<void> updateSpot(Spot spot);
+  Future<void> deleteSpot(int id);
 
   // Booking CRUD
   Future<Booking> createBooking(Booking booking);
   Future<List<Booking>> getBookings(String userId);
+  Future<List<Booking>> getAllBookings();
   Future<void> updateBooking(Booking booking);
   Future<void> deleteBooking(int id);
 

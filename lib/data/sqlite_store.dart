@@ -182,6 +182,27 @@ class SqliteStore implements DataStore {
   }
 
   @override
+  Future<void> updateSpot(Spot spot) async {
+    final map = spot.toMap();
+    map.remove('id'); // ID is used in where clause
+    await _db!.update(
+      'spots',
+      map,
+      where: 'id = ?',
+      whereArgs: [spot.id],
+    );
+  }
+
+  @override
+  Future<void> deleteSpot(int id) async {
+    await _db!.delete(
+      'spots',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  @override
   Future<Booking> createBooking(Booking booking) async {
     final map = booking.toMap();
     map.remove('id');
@@ -208,6 +229,12 @@ class SqliteStore implements DataStore {
       where: 'userId = ?',
       whereArgs: [userId],
     );
+    return maps.map((e) => Booking.fromMap(e)).toList();
+  }
+
+  @override
+  Future<List<Booking>> getAllBookings() async {
+    final maps = await _db!.query('bookings');
     return maps.map((e) => Booking.fromMap(e)).toList();
   }
 
