@@ -1,6 +1,6 @@
 class Booking {
   final int? id;
-  final int userId;
+  final String userId;
   final int spotId;
   final DateTime checkIn;
   final DateTime checkOut;
@@ -44,7 +44,7 @@ class Booking {
   factory Booking.fromMap(Map<String, dynamic> map) {
     return Booking(
       id: map['id'],
-      userId: map['userId'],
+      userId: map['userId'].toString(),
       spotId: map['spotId'],
       checkIn: DateTime.parse(map['checkIn']),
       checkOut: DateTime.parse(map['checkOut']),

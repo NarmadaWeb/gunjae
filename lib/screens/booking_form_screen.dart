@@ -224,7 +224,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                     onPressed: () {
                       final booking = Booking(
                         userId:
-                            1, // Mock user ID for now, or get from context/repo
+                            '1', // Mock user ID for now, or get from context/repo
                         spotId: spot.id,
                         checkIn: _checkIn,
                         checkOut: _checkOut,

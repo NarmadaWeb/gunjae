@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_material_symbols/flutter_material_symbols.dart';
 import 'package:provider/provider.dart';
 import '../../data/repository.dart';
 import '../../models/spot.dart';
@@ -66,7 +67,7 @@ class _AddCampScreenState extends State<AddCampScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildInput("Nama Camp", _nameController, icon: Icons.camping),
+              _buildInput("Nama Camp", _nameController, icon: MaterialSymbols.camping),
               const SizedBox(height: 16),
               _buildInput("Lokasi", _locationController, icon: Icons.location_on),
               const SizedBox(height: 16),

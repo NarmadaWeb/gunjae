@@ -1,6 +1,5 @@
 import 'dart:io';
-import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import '../models/user.dart';
 import '../models/spot.dart';
 import '../models/booking.dart';
