@@ -1,4 +1,3 @@
-import 'dart:io';
 import '../models/user.dart';
 import '../models/spot.dart';
 import '../models/booking.dart';
@@ -12,7 +11,6 @@ abstract class DataStore {
   Future<User?> getUser(String email, String password);
   Future<User?> getUserById(String id);
   Future<void> updateUser(User user);
-  Future<String> uploadAvatar(File file, String userId);
 
   // Spot CRUD (Read mostly)
   Future<List<Spot>> getSpots();

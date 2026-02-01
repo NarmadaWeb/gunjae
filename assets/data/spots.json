@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Gunjae Valley Camp",
+    "location": "Gunjae, South Korea",
+    "price": 50.0,
+    "rating": 4.8,
+    "imageUrl": "https://picsum.photos/id/1018/800/600",
+    "description": "A beautiful valley camping spot surrounded by nature.",
+    "facilities": ["WiFi", "Power", "Water", "Shower"]
+  },
+  {
+    "id": 2,
+    "name": "Mountain View Site",
+    "location": "Seorak Mountain",
+    "price": 75.0,
+    "rating": 4.9,
+    "imageUrl": "https://picsum.photos/id/1036/800/600",
+    "description": "High altitude camping with breathtaking views.",
+    "facilities": ["Power", "Toilet"]
+  },
+  {
+    "id": 3,
+    "name": "Lakeside Retreat",
+    "location": "Gapyeong",
+    "price": 60.0,
+    "rating": 4.5,
+    "imageUrl": "https://picsum.photos/id/1043/800/600",
+    "description": "Peaceful camping right next to the lake.",
+    "facilities": ["Water", "Fishing", "Boat Rental"]
+  }
+]
