@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data_store.dart';
-import 'supabase_store.dart';
+import 'store_factory.dart';
 
 class Repository {
   late DataStore _store;
@@ -8,7 +8,7 @@ class Repository {
   static const String _sessionKey = 'session_user_id';
 
   Future<void> init() async {
-    _store = SupabaseStore();
+    _store = getStore();
     await _store.init();
     await _loadSession();
   }

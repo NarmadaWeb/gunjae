@@ -1,0 +1,16 @@
+[
+  {
+    "id": "admin-123",
+    "name": "Admin User",
+    "email": "admin@gunjae.com",
+    "password": "password123",
+    "avatarUrl": "https://ui-avatars.com/api/?name=Admin+User"
+  },
+  {
+    "id": "user-456",
+    "name": "John Doe",
+    "email": "user@example.com",
+    "password": "password123",
+    "avatarUrl": "https://ui-avatars.com/api/?name=John+Doe"
+  }
+]
